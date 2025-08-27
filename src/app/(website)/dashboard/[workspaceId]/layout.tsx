@@ -1,16 +1,29 @@
-import { onAuthenticateUser } from "@/Actions/User";
-import { getAllUserVideo, getNotification, getWorkscapes, getWorkspaceFolder, verifyAccessWorkspace } from "@/Actions/Workspace";
-import { QueryClient } from "@tanstack/react-query";
+import { getNotification, onAuthenticateUser } from "@/Actions/User";
+import {
+  getAllUserVideo,
+  getWorkscapes,
+  getWorkspaceFolder,
+  verifyAccessWorkspace,
+} from "@/Actions/Workspace";
+import Sidebar from "@/components/Sidebar/Sidebar";
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from "@tanstack/react-query";
 import { redirect } from "next/navigation";
 import React, { ReactNode } from "react";
 
 type Props = {
-  params: { workspaceId: string };
+  params: Promise<{ workspaceId: string }>;
   children: ReactNode;
 };
 
-const layout = async ({ params: { workspaceId }, children }: Props) => {
+const layout = async ({ params, children }: Props) => {
+  const { workspaceId } = await params;
+
   const auth = await onAuthenticateUser();
+
   if (!auth.user?.workspace.length) {
     redirect("/auth/sign-in");
   }
@@ -47,7 +60,15 @@ const layout = async ({ params: { workspaceId }, children }: Props) => {
     queryFn: () => getNotification(),
   });
 
-  return <div>{children}</div>;
+  return (
+    <HydrationBoundary state={dehydrate(query)}>
+      <div className=" flex h-screen w-screen">
+        <Sidebar actionWorkspaceId={workspaceId}></Sidebar>
+
+        {children}
+      </div>
+    </HydrationBoundary>
+  );
 };
 
 export default layout;

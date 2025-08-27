@@ -80,11 +80,50 @@ export const getNotification = async () => {
       },
     });
 
-    if (notification) {
+    if (notification && notification.notification.length > 0) {
       return { status: 200, data: notification };
     }
     return { status: 404, data: [] };
   } catch (error) {
     return { status: 404, data: [], error: error };
+  }
+};
+
+export const searchWorkspace = async (query: string) => {
+  try {
+    const user = await currentUser();
+    if (!user) {
+      return { status: 404 };
+    }
+
+    const workspace = await prisma.user.findMany({
+      where: {
+        OR: [
+          { firstname: { contains: query } },
+          { email: { contains: query } },
+          { lastname: { contains: query } },
+        ],
+        NOT: [{ clerkId: user.id }],
+      },
+      select: {
+        id: true,
+        subscription: {
+          select: {
+            plan: true,
+          },
+        },
+        firstname: true,
+        lastname: true,
+        image: true,
+        email: true,
+      },
+    });
+
+    if (workspace && workspace.length > 0) {
+      return { status: 200, data: workspace };
+    }
+    return { status: 404, data: undefined };
+  } catch (error) {
+    return { status: 500, data: undefined };
   }
 };
