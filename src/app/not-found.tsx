@@ -1,7 +1,11 @@
 import React from "react";
 
 const NotFound = () => {
-  return <div>Not Found</div>;
+  return (
+    <div className=" flex items-center justify-center h-screen w-full">
+      Not Found
+    </div>
+  );
 };
 
 export default NotFound;

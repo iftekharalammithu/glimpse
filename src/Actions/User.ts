@@ -59,3 +59,32 @@ export const onAuthenticateUser = async () => {
     return { status: 500, error: error };
   }
 };
+
+export const getNotification = async () => {
+  try {
+    const user = await currentUser();
+    if (!user) {
+      return { status: 404 };
+    }
+    const notification = await prisma.user.findUnique({
+      where: {
+        clerkId: user.id,
+      },
+      select: {
+        notification: true,
+        _count: {
+          select: {
+            notification: true,
+          },
+        },
+      },
+    });
+
+    if (notification) {
+      return { status: 200, data: notification };
+    }
+    return { status: 404, data: [] };
+  } catch (error) {
+    return { status: 404, data: [], error: error };
+  }
+};
