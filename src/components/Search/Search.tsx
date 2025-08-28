@@ -4,7 +4,8 @@ import React from "react";
 import { Input } from "../ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { User } from "lucide-react";
+import { PlusCircle, User } from "lucide-react";
+import { Button } from "../ui/button";
 
 type WorkspaceSearchProps = {
   workspaceId: string;
@@ -16,12 +17,12 @@ const Search = ({ workspaceId }: WorkspaceSearchProps) => {
     "USER"
   );
 
-  const { mutate, isPending } = useMutationData(
-    ["invite-member"],
-    (data: { receiverId: string; email: string }) => {
-      inviteMember();
-    }
-  );
+  // const { mutate, isPending } = useMutationData(
+  //   ["invite-member"],
+  //   (data: { receiverId: string; email: string }) => {
+  //     inviteMember();
+  //   }
+  // );
 
   return (
     <div className=" gap-y-5 flex flex-col">
@@ -37,7 +38,7 @@ const Search = ({ workspaceId }: WorkspaceSearchProps) => {
           <Skeleton className=" w-full h-8 rounded-xl"></Skeleton>{" "}
         </div>
       ) : !onUsers ? (
-        <p className=" text-center text-sm text-[#a4a4a4]">No User Found </p>
+        <p className=" text-center text-sm text-[#a4a4a4]">No User Found</p>
       ) : (
         <div>
           {onUsers.map((user) => (
@@ -57,6 +58,15 @@ const Search = ({ workspaceId }: WorkspaceSearchProps) => {
                   <p className=" lowercase text-xs bg-white px-2 rounded-lg  text-[#1e1e1e]">
                     {user.subscription?.plan}
                   </p>
+                </div>
+                <div className=" flex-1 flex justify-end  items-center">
+                  <Button
+                    onClick={() => {}}
+                    variant={"default"}
+                    className=" w-5/12 font-bold"
+                  >
+                    <PlusCircle></PlusCircle> Invite
+                  </Button>
                 </div>
               </Avatar>
             </div>

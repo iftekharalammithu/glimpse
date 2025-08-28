@@ -44,6 +44,7 @@
   --radius-xl: calc(var(--radius) + 4px);
   --font-Macondo: "Macondo", cursive;
   --color-link: #7320dd;
+  --color-text2: #9d9d9d;
 }
 
 :root {
