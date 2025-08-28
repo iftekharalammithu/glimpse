@@ -89,14 +89,14 @@ export const getNotification = async () => {
   }
 };
 
-export const searchWorkspace = async (query: string) => {
+export const searchUser = async (query: string) => {
   try {
     const user = await currentUser();
     if (!user) {
       return { status: 404 };
     }
 
-    const workspace = await prisma.user.findMany({
+    const users = await prisma.user.findMany({
       where: {
         OR: [
           { firstname: { contains: query } },
@@ -119,11 +119,12 @@ export const searchWorkspace = async (query: string) => {
       },
     });
 
-    if (workspace && workspace.length > 0) {
-      return { status: 200, data: workspace };
+    if (users && users.length > 0) {
+      return { status: 200, data: users };
     }
     return { status: 404, data: undefined };
   } catch (error) {
+    console.log(error);
     return { status: 500, data: undefined };
   }
 };

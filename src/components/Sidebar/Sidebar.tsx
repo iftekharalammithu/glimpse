@@ -18,7 +18,8 @@ import { getWorkscapes } from "@/Actions/Workspace";
 import { WorkspaceProps } from "@/types/page";
 import { PlusCircle } from "lucide-react";
 import Model from "../Global/Model";
-import WorkspaceSearch from "../Search-Workspace/WorkspaceSearch";
+import WorkspaceSearch from "../Search/Search";
+import Search from "../Search/Search";
 
 type SidebarProps = {
   actionWorkspaceId: string;
@@ -85,7 +86,7 @@ const Sidebar = ({ actionWorkspaceId }: SidebarProps) => {
         }
         description="Invite other users to your workspace"
       >
-        <WorkspaceSearch></WorkspaceSearch>
+        <Search workspaceId={actionWorkspaceId}></Search>
       </Model>
     </div>
   );

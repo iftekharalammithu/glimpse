@@ -44,4 +44,4 @@ Glimpse is a modern video communication platform inspired by Loom, designed to h
 ---
 
 Tech:
-[Debounce]("hook\useSearch.tsx")
+[Debounce](src/hook/useSearch.tsx)

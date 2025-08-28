@@ -1,11 +1,11 @@
 import { ChangeEvent, useEffect, useState } from "react";
 import { useQueryData } from "./usequeryData";
-import { searchWorkspace } from "@/Actions/User";
+import { searchUser } from "@/Actions/User";
 
-export const useSearch = (key: string, type: "WORKSPACE") => {
+export const useSearch = (key: string, type: "USER") => {
   const [query, setQuery] = useState("");
-
   const [debounce, setDebounce] = useState("");
+
   const [onUsers, setOnUsers] = useState<
     | {
         id: string;
@@ -34,10 +34,11 @@ export const useSearch = (key: string, type: "WORKSPACE") => {
   const { refetch, isFetching } = useQueryData(
     [key, debounce],
     async ({ queryKey }) => {
-      if (type === "WORKSPACE") {
-        const workspace = await searchWorkspace(queryKey[1] as string);
-        if (workspace.status === 200) {
-          setOnUsers(workspace.data);
+      if (type === "USER") {
+        console.log(queryKey);
+        const user = await searchUser(queryKey[1] as string);
+        if (user.status === 200) {
+          setOnUsers(user.data);
         }
       }
     },
@@ -52,5 +53,6 @@ export const useSearch = (key: string, type: "WORKSPACE") => {
       setOnUsers(undefined);
     }
   }, [debounce]);
+
   return { onSearchQuery, query, isFetching, onUsers };
 };
