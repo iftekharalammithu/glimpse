@@ -5,6 +5,7 @@ import {
   getWorkspaceFolder,
   verifyAccessWorkspace,
 } from "@/Actions/Workspace";
+import GlobalHeader from "@/components/Global/GlobalHeader";
 import Sidebar from "@/components/Sidebar/Sidebar";
 import {
   dehydrate,
@@ -64,8 +65,10 @@ const layout = async ({ params, children }: Props) => {
     <HydrationBoundary state={dehydrate(query)}>
       <div className=" flex h-screen w-screen">
         <Sidebar actionWorkspaceId={workspaceId}></Sidebar>
-
-        {children}
+        <div className=" w-full pt-28 p-6 overflow-y-scroll overflow-x-hidden">
+          <GlobalHeader workspace={hasAccess.data.workspace}></GlobalHeader>
+          <div className=" mt-4">{children}</div>
+        </div>
       </div>
     </HydrationBoundary>
   );

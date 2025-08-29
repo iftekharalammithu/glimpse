@@ -16,7 +16,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useQueryData } from "@/hook/usequeryData";
 import { getWorkscapes } from "@/Actions/Workspace";
 import { NotificationProps, WorkspaceProps } from "@/types/page";
-import { PlusCircle } from "lucide-react";
+import { Loader2, Menu, PlusCircle } from "lucide-react";
 import Model from "../Global/Model";
 import WorkspaceSearch from "../Search/Search";
 import Search from "../Search/Search";
@@ -24,6 +24,10 @@ import { MenuItems } from "@/Constants";
 import SideBarItems from "./SideBarItems";
 import { getNotification } from "@/Actions/User";
 import WorkplaceHolder from "./WorkplaceHolder";
+import Globalcards from "../Global/Global-card";
+import { Button } from "../ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
+import Infobar from "../Info-Bar/Infobar";
 
 type SidebarProps = {
   actionWorkspaceId: string;
@@ -55,8 +59,8 @@ const Sidebar = ({ actionWorkspaceId }: SidebarProps) => {
   );
 
   const { data: count } = notification as NotificationProps;
-  return (
-    <div className=" bg-background flex-none relative p-4 h-full w-[250px] overflow-hidden flex-col flex gap-4 items-center ">
+  const SidebarSection = (
+    <div className=" bg-background flex-none relative p-4 h-full w-[250px] overflow-auto flex-col flex gap-4 items-center ">
       <div className=" bg-background p-4 gap-2 justify-center items-center mb-4 absolute top-0 left-0  right-0">
         <ImageLogo></ImageLogo>
       </div>
@@ -133,21 +137,79 @@ const Sidebar = ({ actionWorkspaceId }: SidebarProps) => {
       </nav>
       <Separator className=" w-4/5"></Separator>
       <p className=" w-full text-text2 font-bold mt-4">Workspaces</p>
+      {workspace.workspace.length === 1 && workspace.workspace.length > 0 && (
+        <div className=" w-full  mt-[-10px]">
+          <p className=" text-text2 font-medium text-sm">
+            {workspace.subscription?.plan === "FREE"
+              ? "Upgrade to create workspaces"
+              : "No Workspace"}
+          </p>
+        </div>
+      )}
       <nav className=" w-full">
-        <ul className=" h-[150px] overflow-auto overflow-x-hidden fade-layer">
-          {workspace.workspace.length > 1 &&
-            workspace.workspace.map((item) => (
+        <ul className=" h-[150px]  overflow-auto overflow-x-hidden fade-layer">
+          {workspace.workspace.length > 0 &&
+            workspace.workspace.map(
+              (item) =>
+                item.type !== "PERSONAL" && (
+                  <SideBarItems
+                    key={item.id}
+                    href={`/dashboard/${item.id}`}
+                    selected={pathName === `/dashboard/${item.id}`}
+                    title={item.name}
+                    notification={0}
+                    icon={
+                      <WorkplaceHolder>{item.name.charAt(0)}</WorkplaceHolder>
+                    }
+                  />
+                )
+            )}
+          {workspace.members.length > 0 &&
+            workspace.members.map((item) => (
               <SideBarItems
-                key={item.id}
-                href={`/dashboard/${item.id}`}
-                selected={pathName === `/dashboard/${item.id}`}
-                title={item.name}
+                key={item.WorkSpace.id}
+                href={`/dashboard/${item.WorkSpace.id}`}
+                selected={pathName === `/dashboard/${item.WorkSpace.id}`}
+                title={item.WorkSpace.name}
                 notification={0}
-                icon={<WorkplaceHolder>{item.name.charAt(0)}</WorkplaceHolder>}
+                icon={
+                  <WorkplaceHolder>
+                    {item.WorkSpace.name.charAt(0)}
+                  </WorkplaceHolder>
+                }
               />
             ))}
         </ul>
       </nav>
+      <Separator className=" w-4/5 "></Separator>
+      {workspace.subscription?.plan === "FREE" && (
+        <Globalcards
+          title={"Upgrade To Pro"}
+          description="Unlock AI features like transcription, AI Summary and many more"
+        >
+          <Button className=" text-sm w-full mt-2 " variant={"default"}>
+            Upgrade
+          </Button>
+        </Globalcards>
+      )}
+    </div>
+  );
+  return (
+    <div className=" w-full">
+      <Infobar></Infobar>
+      <div className=" md:hidden fixed my-4">
+        <Sheet>
+          <SheetTrigger asChild className=" ml-2">
+            <Button variant={"ghost"} className=" mt-[2px]">
+              <Menu></Menu>{" "}
+            </Button>
+          </SheetTrigger>
+          <SheetContent side={"left"} className=" p-0 w-fit h-full">
+            {SidebarSection}
+          </SheetContent>
+        </Sheet>
+      </div>
+      <div className=" md:block hidden h-full">{SidebarSection}</div>
     </div>
   );
 };
