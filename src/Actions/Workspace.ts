@@ -146,3 +146,49 @@ export const getWorkscapes = async () => {
     return { status: 404, data: [], error: error };
   }
 };
+
+export const CreateWorkspace = async (name: string) => {
+  try {
+    const user = await currentUser();
+    if (!user) {
+      return { status: 404 };
+    }
+    const authorized = await prisma.user.findUnique({
+      where: {
+        clerkId: user.id,
+      },
+      select: {
+        subscription: {
+          select: {
+            plan: true,
+          },
+        },
+      },
+    });
+
+    if (authorized?.subscription?.plan === "PRO") {
+      const workspace = await prisma.user.update({
+        where: {
+          clerkId: user.id,
+        },
+        data: {
+          workspace: {
+            create: {
+              name,
+              type: "PUBLIC",
+            },
+          },
+        },
+      });
+      if (workspace) {
+        return { status: 201, data: "Workspace Created" };
+      }
+    }
+    return {
+      status: 404,
+      data: "You are not authorized to create a workspace",
+    };
+  } catch (error) {
+    return { status: 404, data: [], error: error };
+  }
+};
