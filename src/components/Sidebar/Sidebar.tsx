@@ -195,7 +195,7 @@ const Sidebar = ({ actionWorkspaceId }: SidebarProps) => {
     </div>
   );
   return (
-    <div className=" w-full">
+    <div className=" w-[250px] ">
       <Infobar></Infobar>
       <div className=" md:hidden fixed my-4">
         <Sheet>

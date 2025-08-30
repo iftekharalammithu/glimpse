@@ -19,7 +19,11 @@ const CrateWorkspace = () => {
     };
   };
   if (plan.subscription?.plan === "FREE") {
-    return <></>;
+    return (
+      <>
+        <div>Upgrade to Pro </div>
+      </>
+    );
   }
   if (plan.subscription?.plan === "PRO") {
     return (
@@ -27,7 +31,10 @@ const CrateWorkspace = () => {
         title="Create a Workspace"
         description="This action cannot be undone. This will permanently delete your account and remove your data from our servers."
         trigger={
-          <Button className="rounded-2xl bg-[#1D1D1D] text-gray-500 flex items-center gap-2 py-6 px-4">
+          <Button
+            variant={"default"}
+            className="rounded-2xl  bg-[#1D1D1D] hover:bg-gray-200 hover:text-gray-600 text-gray-200 flex items-center gap-2 py-6 px-4"
+          >
             <FolderPlusIcon></FolderPlusIcon> Crate a workspace
           </Button>
         }

@@ -10,7 +10,7 @@ type GlobalHeaderProps = {
 const GlobalHeader = ({ workspace }: GlobalHeaderProps) => {
   const pathname = usePathname().split(`/dashboard/${workspace.id}`)[1];
   return (
-    <div className=" flex flex-col gap-2">
+    <div className=" flex  flex-col gap-2">
       <span className="  text-gray-400 text-xs">
         {workspace.type.toLocaleUpperCase()}
       </span>
