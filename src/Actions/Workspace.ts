@@ -192,3 +192,72 @@ export const CreateWorkspace = async (name: string) => {
     return { status: 404, data: [], error: error };
   }
 };
+
+export const renameFolders = async (folderId: string, name: string) => {
+  try {
+    const user = await currentUser();
+    if (!user) {
+      return { status: 404 };
+    }
+    const folder = await prisma.folder.update({
+      where: {
+        id: folderId,
+      },
+      data: {
+        name,
+      },
+    });
+    if (folder) {
+      return { status: 200, data: "Folder Renamed" };
+    }
+    return { status: 400, data: "Folder does not exist" };
+  } catch (error) {
+    return { status: 500, error: error, data: " Oops! Something went Wrong" };
+  }
+};
+
+export const createFolder = async (workspaceId: string) => {
+  try {
+    const isNewFolder = await prisma.workSpace.update({
+      where: {
+        id: workspaceId,
+      },
+      data: {
+        folders: {
+          create: {
+            name: "Untitled",
+          },
+        },
+      },
+    });
+    if (isNewFolder) {
+      return { status: 200, data: "News Folder Created" };
+    }
+  } catch (error) {
+    return { status: 400, data: "Some things went wrong" };
+  }
+};
+
+export const getFolderInfo = async (folderId: string) => {
+  try {
+    const folder = await prisma.folder.findUnique({
+      where: {
+        id: folderId,
+      },
+      select: {
+        name: true,
+        _count: {
+          select: {
+            videos: true,
+          },
+        },
+      },
+    });
+    if (folder) {
+      return { status: 200, data: folder };
+    }
+    return { status: 400, data: null };
+  } catch (error) {
+    return { status: 400, data: "some Thing went wrong" };
+  }
+};

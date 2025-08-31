@@ -2,6 +2,7 @@ import {
   MutateFunction,
   MutationKey,
   useMutation,
+  useMutationState,
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
@@ -15,6 +16,7 @@ export const useMutationData = (
 ) => {
   const client = useQueryClient();
   const { mutate, isPending } = useMutation({
+    // this is use to update data and revalidate data
     mutationKey,
     mutationFn,
     onSuccess(data) {
@@ -30,4 +32,21 @@ export const useMutationData = (
     },
   });
   return { mutate, isPending };
+};
+
+export const useMutationDataState = (mutationKey: MutationKey) => {
+  const data = useMutationState({
+    //Get the updated data that send to mutation function
+    filters: { mutationKey },
+    select: (mutation) => {
+      return {
+        variables: mutation.state.variables as any,
+        status: mutation.state.status,
+      };
+    },
+  });
+
+  const latestVariables = data[data.length - 1];
+
+  return { latestVariables };
 };
