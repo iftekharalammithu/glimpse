@@ -93,7 +93,7 @@ export const getAllUserVideo = async (workSpaceId: string) => {
       },
     });
     if (video && video.length > 0) {
-      return { status: 200, data: { video } };
+      return { status: 200, data: [video] };
     }
     return { status: 404, data: [] };
   } catch (error) {

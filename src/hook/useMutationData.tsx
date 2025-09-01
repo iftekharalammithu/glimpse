@@ -16,7 +16,7 @@ export const useMutationData = (
 ) => {
   const client = useQueryClient();
   const { mutate, isPending } = useMutation({
-    // this is use to update data and revalidate data
+    // this is use to update data and Refetch data
     mutationKey,
     mutationFn,
     onSuccess(data) {
