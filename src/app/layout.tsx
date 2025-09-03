@@ -5,6 +5,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { ThemeProvider } from "@/Component/ThemeProvider";
 import ReactQueryProvider from "@/React-query/page";
 import { Toaster } from "sonner";
+import ReduxProvider from "@/Redux/Provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -40,7 +41,7 @@ export default function RootLayout({
               enableSystem
               disableTransitionOnChange
             >
-              {children}
+              <ReduxProvider>{children}</ReduxProvider>
               <Toaster />
             </ThemeProvider>
           </ReactQueryProvider>

@@ -261,3 +261,28 @@ export const getFolderInfo = async (folderId: string) => {
     return { status: 400, data: "some Thing went wrong" };
   }
 };
+
+export const moveVideoLoacation = async (
+  folder_id: string,
+  workSpaceId: string,
+  videoId: string
+) => {
+  try {
+    const location = await prisma.video.update({
+      where: {
+        id: videoId,
+      },
+      data: {
+        folderId: folder_id || null,
+        workSpaceId,
+      },
+    });
+
+    if (location) {
+      return { status: 200, data: "Folder Changed Successfull" };
+    }
+    return { status: 400, data: "Folder/Workspace Not Found" };
+  } catch (error) {
+    return { status: 400, data: "some Thing went wrong" };
+  }
+};

@@ -15,6 +15,7 @@ const useZodForm = (
     handleSubmit,
     formState: { errors },
   } = useForm<z.infer<typeof schema>>({
+    
     resolver: zodResolver(schema),
     defaultValues: { ...defaultValues },
   });

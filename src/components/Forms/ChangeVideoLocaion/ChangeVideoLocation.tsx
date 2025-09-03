@@ -16,7 +16,16 @@ const ChangeVideoLocation = ({
   currentFolderName,
   currentworkspace,
 }: ChangeVideoLocation) => {
-  const {} = useMoveVideos(videoId, currentworkspace!);
+  const {
+    onFormSubmit,
+    errors,
+    register,
+    isPending,
+    folders,
+    workspaces,
+    isFolders,
+    isFetched,
+  } = useMoveVideos(videoId, currentworkspace!);
   return (
     <form className=" flex flex-col gap-y-5 ">
       <div className=" border-[1px] rounded-xl p-5">
