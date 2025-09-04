@@ -66,7 +66,6 @@ export const getAllUserVideo = async (workSpaceId: string) => {
     if (!user) {
       return { status: 404 };
     }
-
     const video = await prisma.video.findMany({
       where: {
         OR: [{ workSpaceId }, { folderId: workSpaceId }],
@@ -93,7 +92,7 @@ export const getAllUserVideo = async (workSpaceId: string) => {
       },
     });
     if (video && video.length > 0) {
-      return { status: 200, data: [video] };
+      return { status: 200, data: video };
     }
     return { status: 404, data: [] };
   } catch (error) {

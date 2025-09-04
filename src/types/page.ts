@@ -55,7 +55,7 @@ export type VideoProps = {
       id: string;
       name: string;
     } | null;
-    createAt: Date;
+    createdAt: Date;
     title: string;
     source: string;
   }[];

@@ -47,6 +47,11 @@ export const useMoveVideos = (videoId: string, currentWorkspace: string) => {
   }, []);
 
   useEffect(() => {
+    // watch is a function from react-hook-form (used inside useZodForm).
+
+    // It's like setting up a listener or a surveillance camera on your entire form.
+
+    // Every single time any field in the form changes, this callback function is called with the new form values (value).
     const workspace = watch(async (value) => {
       if (value.workSpaceId) {
         fetchFolder(value.workSpaceId);

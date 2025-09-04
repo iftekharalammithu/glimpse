@@ -19,6 +19,7 @@ const Videos = ({ folderId, videoKey, workspaceId }: VideosProps) => {
   );
 
   const { status: videoStatus, data: video } = videodata as VideoProps;
+  // console.log(video);
 
   return (
     <div className=" flex flex-col gap-4 mt-4">
@@ -32,7 +33,7 @@ const Videos = ({ folderId, videoKey, workspaceId }: VideosProps) => {
         className={cn(
           videoStatus !== 200
             ? " p-5"
-            : " grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5"
+            : " grid grid-cols-1  gap-10 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5"
         )}
       >
         {videoStatus === 200 ? (
