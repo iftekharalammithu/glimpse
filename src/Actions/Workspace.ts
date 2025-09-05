@@ -285,3 +285,51 @@ export const moveVideoLoacation = async (
     return { status: 400, data: "some Thing went wrong" };
   }
 };
+
+export const getPreviewVideo = async (prevideoId: string) => {
+  try {
+    const user = await currentUser();
+    if (!user) {
+      return { status: 404 };
+    }
+
+    const video = await prisma.video.findUnique({
+      where: {
+        id: prevideoId,
+      },
+      select: {
+        title: true,
+        createdAt: true,
+        source: true,
+        description: true,
+        processing: true,
+        views: true,
+        summary: true,
+        User: {
+          select: {
+            firstname: true,
+            lastname: true,
+            image: true,
+            clerkId: true,
+            trail: true,
+            subscription: {
+              select: {
+                plan: true,
+              },
+            },
+          },
+        },
+      },
+    });
+    if (video) {
+      return {
+        status: 200,
+        data: video,
+        author: user.id === video.User?.clerkId ? true : false,
+      };
+    }
+    return { status: 500, data: null };
+  } catch (error) {
+    return { status: 500, data: null };
+  }
+};
