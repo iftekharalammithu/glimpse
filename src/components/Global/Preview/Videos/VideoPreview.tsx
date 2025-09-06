@@ -1,4 +1,3 @@
-"use client";
 import { getPreviewVideo } from "@/Actions/Workspace";
 import { useQueryData } from "@/hook/usequeryData";
 import type { VideoTypeProps } from "@/types/page";
@@ -10,6 +9,8 @@ import { truncateString } from "@/lib/utils";
 import { Download } from "lucide-react";
 import { Tabs } from "@radix-ui/react-tabs";
 import TabsMenu from "../../TabsMenu";
+import AiTools from "../../AiTools";
+import VideoTranscript from "../../VideoTranscript";
 
 type VideoPreviewProps = {
   videoId: string;
@@ -20,15 +21,18 @@ const VideoPreview = ({ videoId }: VideoPreviewProps) => {
   const { data } = useQueryData(["preview-video"], () =>
     getPreviewVideo(videoId)
   );
+
   const { data: video, status, author } = data as VideoTypeProps;
+
   if (status !== 200) {
     router.push("/");
   }
 
-  const dayAgo =
-    (new Date().getTime() - video.createdAt.getTime()) / (24 * 60 * 60 * 1000);
+  const dayAgo = Math.floor(
+    (new Date().getTime() - video.createdAt.getTime()) / (24 * 60 * 60 * 1000)
+  );
   return (
-    <div className=" grid grid-cols-1 xl:grid-cols-3 p-10 lg:px-20 lg:py-10 overflow-auto gap-5">
+    <div className=" grid grid-cols-1 xl:grid-cols-3  lg:py-10 overflow-y-auto gap-5">
       <div className=" flex flex-col lg:col-span-2 gap-y-10">
         <div>
           <div className=" flex gap-x-5 items-start justify-between">
@@ -99,7 +103,12 @@ const VideoPreview = ({ videoId }: VideoPreviewProps) => {
             defaultValue="AI Tools"
             triggers={["AI Tools", "Transcript", "Activity"]}
           >
-            <AiTools></AiTools>
+            <AiTools
+              videoId={videoId}
+              trail={video.User?.trail!}
+              plan={video.User?.subscription?.plan!}
+            ></AiTools>
+            <VideoTranscript transcript={video.description!}></VideoTranscript>
           </TabsMenu>
         </div>
       </div>

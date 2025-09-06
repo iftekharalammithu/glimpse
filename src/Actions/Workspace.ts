@@ -289,6 +289,7 @@ export const moveVideoLoacation = async (
 export const getPreviewVideo = async (prevideoId: string) => {
   try {
     const user = await currentUser();
+
     if (!user) {
       return { status: 404 };
     }

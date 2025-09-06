@@ -8,7 +8,7 @@ const page = async () => {
     return redirect(`/dashboard/${auth.user?.workspace[0].id}`);
   }
 
-  if (auth.status == 400 || auth.status === 500) {
+  if (auth.status == 403 || auth.status === 500) {
     return redirect("/auth/sign-in");
   }
 };

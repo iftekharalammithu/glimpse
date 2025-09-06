@@ -49,7 +49,7 @@ const Sidebar = ({ actionWorkspaceId }: SidebarProps) => {
   // console.log("workspace", workspace);
   // console.log("actionWorkspaceId", actionWorkspaceId);
 
-  const currentWorkspace = workspace.workspace.find(
+  const currentWorkspace = workspace?.workspace.find(
     (s) => s.id === actionWorkspaceId
   );
   const menuItems = MenuItems(actionWorkspaceId);
@@ -135,7 +135,7 @@ const Sidebar = ({ actionWorkspaceId }: SidebarProps) => {
               title={item.title}
               notification={
                 (item.title === "Notification" &&
-                  count._count &&
+                  count?._count &&
                   count._count.notification) ||
                 0
               }

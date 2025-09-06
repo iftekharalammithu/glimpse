@@ -61,7 +61,7 @@ const Folder = ({ name, id, optimistic, count }: FolderProps) => {
         "flex cursor-pointer items-center justify-between gap-2 rounded-lg border-[1px] min-w-[250px]  py-4 px-4 transition duration-150 hover:bg-neutral-800"
       )}
     >
-      {false ? (
+      {isPending ? (
         <Loader2 className=" animate-spin"></Loader2>
       ) : (
         <div className=" flex justify-between w-full items-center">

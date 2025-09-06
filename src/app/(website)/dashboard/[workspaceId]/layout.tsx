@@ -33,7 +33,7 @@ const layout = async ({ params, children }: Props) => {
   }
 
   const hasAccess = await verifyAccessWorkspace(workspaceId);
-
+  
   if (!hasAccess.data?.workspace) {
     return null;
   }
