@@ -2,6 +2,7 @@
 
 import prisma from "@/lib/prisma";
 import { currentUser } from "@clerk/nextjs/server";
+import type { string } from "zod/v3";
 
 export const onAuthenticateUser = async () => {
   try {
@@ -149,6 +150,150 @@ export const getPaymentInfo = async () => {
     });
     if (payment) {
       return { status: 200, data: payment };
+    }
+    return { status: 404 };
+  } catch (error) {
+    return { status: 404 };
+  }
+};
+
+export const getFirstView = async () => {
+  try {
+    const user = await currentUser();
+    if (!user) {
+      return { status: 404 };
+    }
+
+    const userdata = await prisma.user.findUnique({
+      where: {
+        clerkId: user.id,
+      },
+      select: {
+        firstView: true,
+      },
+    });
+    if (userdata) {
+      return { status: 200, data: userdata.firstView };
+    }
+
+    return { status: 404 };
+  } catch (error) {
+    return { status: 404 };
+  }
+};
+
+export const enableFirstView = async (checked: boolean) => {
+  try {
+    const user = await currentUser();
+    if (!user) {
+      return { status: 404 };
+    }
+
+    const view = await prisma.user.update({
+      where: {
+        clerkId: user.id,
+      },
+      data: {
+        firstView: checked,
+      },
+    });
+
+    if (view) {
+      return { status: 200, data: "Setting Update" };
+    }
+
+    return { status: 404 };
+  } catch (error) {
+    return { status: 404 };
+  }
+};
+
+export const createCommentAndReply = async (
+  userid: string,
+  comment: string,
+  videoId: string,
+  commentId?: string
+) => {
+  try {
+    const reply = await prisma.comment.update({
+      where: { id: commentId },
+      data: {
+        reply: {
+          create: {
+            comment,
+            userId: userid,
+            videoId,
+          },
+        },
+      },
+    });
+    if (reply) {
+      return { status: 200, data: "Reply posted" };
+    }
+
+    const newComment = await prisma.video.update({
+      where: {
+        id: videoId,
+      },
+      data: {
+        comment: {
+          create: {
+            comment,
+            userId: userid,
+          },
+        },
+      },
+    });
+    if (newComment) {
+      return { status: 200, data: "New Comment Added" };
+    }
+    return { status: 404 };
+  } catch (error) {}
+};
+
+export const getUserProfile = async () => {
+  try {
+    const user = await currentUser();
+    if (!user) {
+      return { status: 404 };
+    }
+
+    const profitIdAndImage = await prisma.user.findUnique({
+      where: {
+        clerkId: user.id,
+      },
+      select: {
+        image: true,
+        id: true,
+      },
+    });
+    if (profitIdAndImage) {
+      return { status: 200, data: profitIdAndImage };
+    }
+    return { status: 404 };
+  } catch (error) {
+    return { status: 404 };
+  }
+};
+
+export const getVideoComment = async (id: string) => {
+  try {
+    const comment = await prisma.comment.findMany({
+      where: {
+        OR: [{ videoId: id }, { commentId: id }],
+        commentId: null,
+      },
+      include: {
+        reply: {
+          include: {
+            User: true,
+          },
+        },
+        User: true,
+      },
+    });
+    if (comment && comment.length > 0) {
+      return { status: 200, data: comment };
     }
     return { status: 404 };
   } catch (error) {

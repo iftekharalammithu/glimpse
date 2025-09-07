@@ -11,6 +11,7 @@ import { Tabs } from "@radix-ui/react-tabs";
 import TabsMenu from "../../TabsMenu";
 import AiTools from "../../AiTools";
 import VideoTranscript from "../../VideoTranscript";
+import Activity from "../../Activity";
 
 type VideoPreviewProps = {
   videoId: string;
@@ -109,6 +110,10 @@ const VideoPreview = ({ videoId }: VideoPreviewProps) => {
               plan={video.User?.subscription?.plan!}
             ></AiTools>
             <VideoTranscript transcript={video.description!}></VideoTranscript>
+            <Activity
+              author={video.User?.firstname as string}
+              videoId={videoId}
+            ></Activity>
           </TabsMenu>
         </div>
       </div>

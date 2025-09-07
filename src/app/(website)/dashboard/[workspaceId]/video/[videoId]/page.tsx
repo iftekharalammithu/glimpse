@@ -1,3 +1,4 @@
+import { getUserProfile } from "@/Actions/User";
 import { getPreviewVideo } from "@/Actions/Workspace";
 import VideoPreview from "@/components/Global/Preview/Videos/VideoPreview";
 import {
@@ -14,6 +15,11 @@ const page = async (props: { params: { videoId: string } }) => {
   await query.prefetchQuery({
     queryKey: ["preview-video"],
     queryFn: () => getPreviewVideo(videoId),
+  });
+
+  await query.prefetchQuery({
+    queryKey: ["user-profile"],
+    queryFn: getUserProfile,
   });
 
   return (
