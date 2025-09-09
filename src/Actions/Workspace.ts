@@ -2,6 +2,7 @@
 
 import prisma from "@/lib/prisma";
 import { currentUser } from "@clerk/nextjs/server";
+import { sendEmail } from "./User";
 
 export const verifyAccessWorkspace = async (workspaceId: string) => {
   try {
@@ -332,5 +333,84 @@ export const getPreviewVideo = async (prevideoId: string) => {
     return { status: 500, data: null };
   } catch (error) {
     return { status: 500, data: null };
+  }
+};
+
+export const sendEmailForFirstView = async (videoId: string) => {
+  try {
+    const user = await currentUser();
+
+    if (!user) {
+      return { status: 404 };
+    }
+
+    const firstView = await prisma.user.findUnique({
+      where: {
+        clerkId: user.id,
+      },
+      select: {
+        firstView: true,
+      },
+    });
+    if (!firstView?.firstView) {
+      return;
+    }
+    const video = await prisma.video.findUnique({
+      where: {
+        id: videoId,
+      },
+      select: {
+        title: true,
+        views: true,
+        User: {
+          select: {
+            email: true,
+          },
+        },
+      },
+    });
+    if (video && video.views === 0) {
+      await prisma.video.update({
+        where: {
+          id: videoId,
+        },
+        data: {
+          views: video.views + 1,
+        },
+      });
+    }
+    if (!video) {
+      return;
+    }
+    const { transporter, mailOptions } = await sendEmail(
+      video.User?.email,
+      "You got a Viewer",
+      `your video ${video?.title} just got its first viewer`
+    );
+
+    transporter.sendMail(mailOptions, async (error, info) => {
+      if (error) {
+        console.log(error.message);
+      } else {
+        const notification = await prisma.user.update({
+          where: {
+            clerkId: user.id,
+          },
+          data: {
+            notification: {
+              create: {
+                content: mailOptions.text,
+              },
+            },
+          },
+        });
+        if (notification) {
+          return { status: 200 };
+        }
+      }
+    });
+    return { status: 404 };
+  } catch (error) {
+    return { status: 404, data: "something went wrong" };
   }
 };

@@ -4,8 +4,9 @@ import React from "react";
 import { Input } from "../ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { PlusCircle, User } from "lucide-react";
+import { PlusCircle, User, Loader2 } from "lucide-react";
 import { Button } from "../ui/button";
+import { inviteMember } from "@/Actions/User";
 
 type WorkspaceSearchProps = {
   workspaceId: string;
@@ -17,12 +18,12 @@ const Search = ({ workspaceId }: WorkspaceSearchProps) => {
     "USER"
   );
 
-  // const { mutate, isPending } = useMutationData(
-  //   ["invite-member"],
-  //   (data: { receiverId: string; email: string }) => {
-  //     inviteMember();
-  //   }
-  // );
+  const { mutate, isPending } = useMutationData(
+    ["invite-member"],
+    (data: { receiverId: string; email: string }) => {
+      inviteMember(data.receiverId, data.email, workspaceId);
+    }
+  );
 
   return (
     <div className=" gap-y-5 flex flex-col">
@@ -61,11 +62,17 @@ const Search = ({ workspaceId }: WorkspaceSearchProps) => {
                 </div>
                 <div className=" flex-1 flex justify-end  items-center">
                   <Button
-                    onClick={() => {}}
+                    onClick={() =>
+                      mutate({ recieverId: user.id, email: user.email })
+                    }
                     variant={"default"}
                     className=" w-5/12 font-bold"
                   >
-                    <PlusCircle></PlusCircle> Invite
+                    {isPending ? (
+                      <Loader2 className=" animate-spin"></Loader2>
+                    ) : (
+                      "Invite"
+                    )}
                   </Button>
                 </div>
               </Avatar>

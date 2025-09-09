@@ -1,13 +1,13 @@
-import { getPreviewVideo } from "@/Actions/Workspace";
+"use client";
+import { getPreviewVideo, sendEmailForFirstView } from "@/Actions/Workspace";
 import { useQueryData } from "@/hook/usequeryData";
 import type { VideoTypeProps } from "@/types/page";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { useEffect } from "react";
 import CopyLink from "./CopyLink";
 import RichLink from "./RichLink";
 import { truncateString } from "@/lib/utils";
 import { Download } from "lucide-react";
-import { Tabs } from "@radix-ui/react-tabs";
 import TabsMenu from "../../TabsMenu";
 import AiTools from "../../AiTools";
 import VideoTranscript from "../../VideoTranscript";
@@ -23,6 +23,8 @@ const VideoPreview = ({ videoId }: VideoPreviewProps) => {
     getPreviewVideo(videoId)
   );
 
+  const notifyFirstView = async () => await sendEmailForFirstView(videoId);
+
   const { data: video, status, author } = data as VideoTypeProps;
 
   if (status !== 200) {
@@ -32,8 +34,18 @@ const VideoPreview = ({ videoId }: VideoPreviewProps) => {
   const dayAgo = Math.floor(
     (new Date().getTime() - video.createdAt.getTime()) / (24 * 60 * 60 * 1000)
   );
+
+  useEffect(() => {
+    if (video.views === 0) {
+      notifyFirstView();
+    }
+    return () => {
+      notifyFirstView();
+    };
+  }, []);
+
   return (
-    <div className=" grid grid-cols-1 xl:grid-cols-3  lg:py-10 overflow-y-auto gap-5">
+    <div className="  grid grid-cols-1 xl:grid-cols-3  lg:py-10 overflow-y-auto gap-5">
       <div className=" flex flex-col lg:col-span-2 gap-y-10">
         <div>
           <div className=" flex gap-x-5 items-start justify-between">
@@ -79,10 +91,10 @@ const VideoPreview = ({ videoId }: VideoPreviewProps) => {
               ""
             )}
           </div>
-          <p className=" text-gray-400 text-lg font-medium">
-            {video.description}
-          </p>
         </div>
+        <p className=" text-gray-400 text-lg font-medium">
+          {video.description}
+        </p>
       </div>
       <div className=" lg:col-span-1 flex flex-col gap-y-16">
         <div className=" items-center flex justify-end gap-x-3 ">

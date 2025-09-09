@@ -1,4 +1,4 @@
-import { getUserProfile } from "@/Actions/User";
+import { getUserProfile, getVideoComment } from "@/Actions/User";
 import { getPreviewVideo } from "@/Actions/Workspace";
 import VideoPreview from "@/components/Global/Preview/Videos/VideoPreview";
 import {
@@ -19,6 +19,10 @@ const page = async (props: { params: { videoId: string } }) => {
   await query.prefetchQuery({
     queryKey: ["user-profile"],
     queryFn: getUserProfile,
+  });
+  await query.prefetchQuery({
+    queryKey: ["video-comments"],
+    queryFn: () => getVideoComment(videoId),
   });
 
   return (

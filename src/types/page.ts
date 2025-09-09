@@ -98,9 +98,51 @@ export type CommentRepliesProps = {
     firstname: string | null;
     lastname: string | null;
     createdAt: Date;
-    clerkid: string;
+    clerkId: string;
     image: string | null;
-    trial: boolean;
+    trail: boolean;
     firstView: boolean;
   };
 } | null;
+
+export type VideoCommentProps = {
+  data: {
+    User: {
+      id: string;
+      email: string;
+      firstname: string | null;
+      lastname: string | null;
+      createdAt: Date;
+      clerkId: string;
+      image: string | null;
+      trail: boolean;
+      firstView: boolean;
+      updatedAt: Date;
+    } | null;
+    reply: {
+      id: string;
+      comment: string;
+      createdAt: Date;
+      commentId: string | null;
+      userId: string | null;
+      videoId: string | null;
+      User: {
+        id: string;
+        email: string;
+        firstname: string | null;
+        lastname: string | null;
+        createdAt: Date;
+        clerkId: string;
+        image: string | null;
+        trail: boolean;
+        firstView: boolean;
+      };
+    }[];
+    id: string;
+    createdAt: Date;
+    userId: string | null;
+    comment: string;
+    commentId: string | null;
+    videoId: string | null;
+  }[];
+};

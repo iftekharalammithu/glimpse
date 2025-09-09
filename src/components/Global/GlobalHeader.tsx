@@ -15,9 +15,11 @@ const GlobalHeader = ({ workspace }: GlobalHeaderProps) => {
         {workspace.type.toLocaleUpperCase()}
       </span>
       <h1 className=" text-4xl">
-        {pathname && !pathname.includes("folder")
-          ? !pathname.charAt(1).toUpperCase() + pathname.slice(2).toLowerCase()
-          : ""}
+        {pathname && !pathname.includes("folder") && !pathname.includes("video")
+          ? pathname.charAt(1).toUpperCase() + pathname.slice(2).toLowerCase()
+          : pathname.includes("video")
+          ? ""
+          : "My Library"}
       </h1>
     </div>
   );

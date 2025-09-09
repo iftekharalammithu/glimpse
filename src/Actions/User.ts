@@ -2,8 +2,32 @@
 
 import prisma from "@/lib/prisma";
 import { currentUser } from "@clerk/nextjs/server";
-import type { string } from "zod/v3";
+import nodemailer from "nodemailer";
 
+export const sendEmail = (
+  to: string,
+  subject: string,
+  text: string,
+  html?: string
+) => {
+  const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
+    auth: {
+      user: process.env.MAILER_EMAIL,
+      pass: process.env.MAILER_PASSWORD,
+    },
+  });
+
+  const mailOptions = {
+    to,
+    subject,
+    text,
+    html,
+  };
+  return { transporter, mailOptions };
+};
 export const onAuthenticateUser = async () => {
   try {
     const user = await currentUser();
@@ -215,20 +239,22 @@ export const createCommentAndReply = async (
   commentId?: string
 ) => {
   try {
-    const reply = await prisma.comment.update({
-      where: { id: commentId },
-      data: {
-        reply: {
-          create: {
-            comment,
-            userId: userid,
-            videoId,
+    if (commentId) {
+      const reply = await prisma.comment.update({
+        where: { id: commentId },
+        data: {
+          reply: {
+            create: {
+              comment,
+              userId: userid,
+              videoId,
+            },
           },
         },
-      },
-    });
-    if (reply) {
-      return { status: 200, data: "Reply posted" };
+      });
+      if (reply) {
+        return { status: 200, data: "Reply posted" };
+      }
     }
 
     const newComment = await prisma.video.update({
@@ -292,11 +318,161 @@ export const getVideoComment = async (id: string) => {
         User: true,
       },
     });
-    if (comment && comment.length > 0) {
-      return { status: 200, data: comment };
-    }
-    return { status: 404 };
+    return { status: 200, data: comment };
   } catch (error) {
     return { status: 404 };
+  }
+};
+
+export const inviteMember = async (
+  recieverId: string,
+  email: string,
+  workspaceId: string
+) => {
+  try {
+    const user = await currentUser();
+    if (!user) {
+      return { status: 404 };
+    }
+    const senderInfo = await prisma.user.findUnique({
+      where: {
+        clerkId: user.id,
+      },
+      select: {
+        id: true,
+        firstname: true,
+        lastname: true,
+      },
+    });
+    if (senderInfo?.id) {
+      const workspace = await prisma.workSpace.findUnique({
+        where: {
+          id: workspaceId,
+        },
+        select: {
+          name: true,
+        },
+      });
+      if (workspace) {
+        const invitation = await prisma.invite.create({
+          data: {
+            senderId: senderInfo.id,
+            recieverId,
+            workSpaceId: workspaceId,
+            content: `You are invited to join ${workspace.name} Workspace, click accpect to confirm`,
+          },
+          select: {
+            id: true,
+          },
+        });
+        await prisma.user.update({
+          where: {
+            clerkId: user.id,
+          },
+          data: {
+            notification: {
+              create: {
+                content: `${user.firstName} ${user.lastName} invited ${senderInfo.firstname} into this ${workspace?.name}`,
+              },
+            },
+          },
+        });
+        if (invitation) {
+          const { transporter, mailOptions } = sendEmail(
+            email,
+            "You got an invitaion",
+            `You are invited to join ${workspace.name} Workspace, click to accept to confirm`,
+            `<a href="${process.env.NEXT_PUBLIC_HOST_URL}/invite/${invitation.id}" style="background-color: #000; padding: 5px 10px; border-radius: 10px;">Accept Invite</a>`
+          );
+          transporter.sendMail(mailOptions, async (error, info) => {
+            if (error) {
+              console.log("##", error.message);
+            } else {
+              console.log("✅", info);
+            }
+          });
+          return { status: 200, data: "Invite Sent" };
+        }
+        return { status: 400, data: "Invite failed" };
+      }
+      return { status: 400, data: "workspace not found" };
+    }
+    return { status: 400, data: "recepient not found" };
+  } catch (error) {
+    return { status: 404, data: "something went wrong" };
+  }
+};
+
+export const acceptInvite = async (inviteId: string) => {
+  try {
+    const user = await currentUser();
+    if (!user) {
+      return { status: 404 };
+    }
+    const invitation = await prisma.invite.findUnique({
+      where: {
+        id: inviteId,
+      },
+      select: {
+        workSpaceId: true,
+        reciever: {
+          select: {
+            clerkId: true,
+          },
+        },
+      },
+    });
+
+    if (user.id !== invitation?.reciever?.clerkId) {
+      return { status: 401 };
+    }
+    const acceptInvite = await prisma.invite.update({
+      where: {
+        id: inviteId,
+      },
+      data: {
+        accepted: true,
+      },
+    });
+    const updateMember = await prisma.user.update({
+      where: {
+        clerkId: user.id,
+      },
+      data: {
+        members: {
+          create: {
+            workSpaceId: invitation.workSpaceId,
+          },
+        },
+      },
+    });
+    const memberstransaction = await prisma.$transaction([
+      prisma.invite.update({
+        where: {
+          id: inviteId,
+        },
+        data: {
+          accepted: true,
+        },
+      }),
+      prisma.user.update({
+        where: {
+          clerkId: user.id,
+        },
+        data: {
+          members: {
+            create: {
+              workSpaceId: invitation.workSpaceId,
+            },
+          },
+        },
+      }),
+    ]);
+    if (memberstransaction) {
+      return { status: 200 };
+    }
+    return { status: 400 };
+  } catch (error) {
+    return { status: 404, data: "something went wrong" };
   }
 };
