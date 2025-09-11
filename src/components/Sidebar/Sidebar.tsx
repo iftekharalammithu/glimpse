@@ -30,6 +30,7 @@ import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
 import Infobar from "../Info-Bar/Infobar";
 import { useDispatch } from "react-redux";
 import { WORKSPACE } from "@/Redux/Slices/Workspaces";
+import PaymentButton from "../Global/PaymentButton";
 
 type SidebarProps = {
   actionWorkspaceId: string;
@@ -194,11 +195,8 @@ const Sidebar = ({ actionWorkspaceId }: SidebarProps) => {
         <Globalcards
           title={"Upgrade To Pro"}
           description="Unlock AI features like transcription, AI Summary and many more"
-        >
-          <Button className=" text-sm w-full mt-2 " variant={"default"}>
-            Upgrade
-          </Button>
-        </Globalcards>
+          footer={<PaymentButton></PaymentButton>}
+        ></Globalcards>
       )}
     </div>
   );

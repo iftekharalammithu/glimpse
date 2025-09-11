@@ -3,6 +3,7 @@
 import prisma from "@/lib/prisma";
 import { currentUser } from "@clerk/nextjs/server";
 import nodemailer from "nodemailer";
+import Stripe from "stripe";
 
 export const sendEmail = (
   to: string,
@@ -474,5 +475,41 @@ export const acceptInvite = async (inviteId: string) => {
     return { status: 400 };
   } catch (error) {
     return { status: 404, data: "something went wrong" };
+  }
+};
+
+const stripeConfig = new Stripe(process.env.STRIPE_SECRET_KEY as string);
+
+export const completeSubscription = async (sessionId: string) => {
+  try {
+    const user = await currentUser();
+    if (!user) {
+      return { status: 404 };
+    }
+    const session = await stripeConfig.checkout.sessions.retrieve(sessionId);
+    if (session) {
+      const customer = await prisma.user.update({
+        where: {
+          clerkId: user.id,
+        },
+        data: {
+          subscription: {
+            update: {
+              data: {
+                customerId: session.customer as string,
+                plan: "PRO",
+              },
+            },
+          },
+        },
+      });
+      if (customer) {
+        return { status: 200 };
+      }
+      return { status: 404 };
+    }
+    return { status: 404 };
+  } catch (error) {
+    return { status: 400, data: "something went wrong" };
   }
 };
