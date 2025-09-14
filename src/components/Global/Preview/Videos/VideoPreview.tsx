@@ -12,6 +12,7 @@ import TabsMenu from "../../TabsMenu";
 import AiTools from "../../AiTools";
 import VideoTranscript from "../../VideoTranscript";
 import Activity from "../../Activity";
+import EditVideo from "./EditVideo";
 
 type VideoPreviewProps = {
   videoId: string;
@@ -121,7 +122,7 @@ const VideoPreview = ({ videoId }: VideoPreviewProps) => {
               trail={video.User?.trail!}
               plan={video.User?.subscription?.plan!}
             ></AiTools>
-            <VideoTranscript transcript={video.description!}></VideoTranscript>
+            <VideoTranscript transcript={video.summary!}></VideoTranscript>
             <Activity
               author={video.User?.firstname as string}
               videoId={videoId}

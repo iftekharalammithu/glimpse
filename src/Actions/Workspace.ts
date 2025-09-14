@@ -414,3 +414,32 @@ export const sendEmailForFirstView = async (videoId: string) => {
     return { status: 404, data: "something went wrong" };
   }
 };
+
+export const editVideoInfo = async (
+  videoId: string,
+  title: string,
+  description: string
+) => {
+  try {
+    const user = await currentUser();
+
+    if (!user) {
+      return { status: 404 };
+    }
+    const video = await prisma.video.update({
+      where: {
+        id: videoId,
+      },
+      data: {
+        title,
+        description,
+      },
+    });
+    if (video) {
+      return { status: 200, data: "Video successfully Update" };
+    }
+    return { status: 400, data: "Video Not FOund" };
+  } catch (error) {
+    return { status: 404, data: "something went wrong" };
+  }
+};
