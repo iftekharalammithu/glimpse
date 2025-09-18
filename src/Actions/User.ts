@@ -5,7 +5,7 @@ import { currentUser } from "@clerk/nextjs/server";
 import nodemailer from "nodemailer";
 import Stripe from "stripe";
 
-export const sendEmail = (
+export const sendEmail = async (
   to: string,
   subject: string,
   text: string,

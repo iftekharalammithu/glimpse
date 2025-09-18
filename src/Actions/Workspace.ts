@@ -443,3 +443,11 @@ export const editVideoInfo = async (
     return { status: 404, data: "something went wrong" };
   }
 };
+
+export const getWixContent = async () => {
+  try {
+    return { status: 200, data: [] };
+  } catch (error) {
+    return { status: 404 };
+  }
+};

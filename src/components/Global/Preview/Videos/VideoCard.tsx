@@ -1,3 +1,4 @@
+"use client";
 import { getAllUserVideo } from "@/Actions/Workspace";
 import { VideoProps } from "@/types/page";
 import { CopyleftIcon, Dot, Loader2, Shapes, User } from "lucide-react";
